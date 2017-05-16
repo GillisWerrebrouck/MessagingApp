@@ -26,4 +26,5 @@
     <string name="no_messages">No messages</string>
     <string name="no_users">No users</string>
     <string name="loading">Loading …</string>
+    <string name="sign_off">Sign off</string>
 </resources>

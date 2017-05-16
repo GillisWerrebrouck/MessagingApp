@@ -4,7 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.support.annotation.NonNull;
+import android.support.design.internal.NavigationMenu;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,6 +17,9 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -101,6 +106,25 @@ public class MessagesActivity extends AppCompatActivity {
         user = new User(firebaseAuth.getCurrentUser());
 
         messagesListeners();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.default_options_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.sign_off:
+                user.signOff();
+                Intent login = new Intent(getApplicationContext(), LoginActivity.class);
+                startActivity(login);
+                return true;
+            default:
+                return true;
+        }
     }
 
     private void messagesListeners() {
@@ -347,7 +371,7 @@ public class MessagesActivity extends AppCompatActivity {
                 holder.lastMessage.setText(messagegArr.get(position));
             }
 
-            if(messageKeyArr.isEmpty()){
+            if (messageKeyArr.isEmpty()) {
                 noMessages.setVisibility(View.VISIBLE);
             } else {
                 noMessages.setVisibility(View.GONE);
@@ -358,11 +382,5 @@ public class MessagesActivity extends AppCompatActivity {
         public int getItemCount() {
             return messageKeyArr.size();
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        user.signOff();
     }
 }

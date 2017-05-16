@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -65,6 +66,8 @@ public class MessageActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private User user = null;
+
+    View.OnLayoutChangeListener layoutChangeListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,12 +149,13 @@ public class MessageActivity extends AppCompatActivity {
             });
         }
 
-        messagesRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+        layoutChangeListener = new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
                 messagesRecyclerView.smoothScrollToPosition(adapter.getItemCount());
             }
-        });
+        };
+        messagesRecyclerView.addOnLayoutChangeListener(layoutChangeListener);
 
         newMessage.setOnEditorActionListener(new EditText.OnEditorActionListener() {
             @Override
@@ -364,16 +368,50 @@ public class MessageActivity extends AppCompatActivity {
     }
 
     private void animateMessageTime(View messageTimeLayout) {
+        messagesRecyclerView.removeOnLayoutChangeListener(layoutChangeListener);
+
         if (messageTimeLayout.getVisibility() == View.VISIBLE) {
             ScaleAnimation anim = new ScaleAnimation(1, 1, 1, 0);
             anim.setFillAfter(true);
             anim.setDuration(350);
+            anim.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    messagesRecyclerView.addOnLayoutChangeListener(layoutChangeListener);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
             messageTimeLayout.setAnimation(anim);
             messageTimeLayout.setVisibility(View.GONE);
         } else {
             messageTimeLayout.setVisibility(View.VISIBLE);
             ScaleAnimation anim = new ScaleAnimation(1, 1, 0, 1);
             anim.setDuration(500);
+            anim.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    messagesRecyclerView.addOnLayoutChangeListener(layoutChangeListener);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
             messageTimeLayout.setAnimation(anim);
         }
     }
