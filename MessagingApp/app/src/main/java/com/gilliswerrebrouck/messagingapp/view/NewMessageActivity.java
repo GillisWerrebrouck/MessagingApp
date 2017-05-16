@@ -38,6 +38,8 @@ public class NewMessageActivity extends AppCompatActivity {
 
     @BindView(R.id.users)
     RecyclerView usersRecyclerView;
+    @BindView(R.id.no_users)
+    TextView noUsers;
 
     private UsersRecycleViewAdapter adapter;
 
@@ -179,6 +181,12 @@ public class NewMessageActivity extends AppCompatActivity {
                 holder.userStatusBack.getBackground().setTint(getColor(R.color.background));
 
                 holder.username.setText(usernameArr.get(position));
+            }
+
+            if(uidArr.isEmpty()){
+                noUsers.setVisibility(View.VISIBLE);
+            } else {
+                noUsers.setVisibility(View.GONE);
             }
         }
 

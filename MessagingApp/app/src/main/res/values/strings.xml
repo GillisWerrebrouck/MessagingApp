@@ -24,4 +24,6 @@
     <string name="register">Register</string>
     <string name="sign_in">Login</string>
     <string name="no_messages">No messages</string>
+    <string name="no_users">No users</string>
+    <string name="loading">Loading …</string>
 </resources>
