@@ -57,7 +57,7 @@ public class MessageActivity extends AppCompatActivity {
 
     private MessageRecycleViewAdapter adapter;
 
-    private String messageKey;
+    private String messageKey, uid;
     private List<String> userArr = new ArrayList<String>();
     private List<String> timeArr = new ArrayList<String>();
     private List<String> messageArr = new ArrayList<String>();
@@ -101,9 +101,12 @@ public class MessageActivity extends AppCompatActivity {
         user = new User(firebaseAuth.getCurrentUser());
         final User finalUser = user;
 
-        messageKey = getIntent().getExtras().get("message_key").toString();
-
-        messageListeners();
+        if(getIntent().getExtras().get("message_key") != null){
+            messageKey = getIntent().getExtras().get("message_key").toString();
+            messageListeners();
+        } else if (getIntent().getExtras().get("uid") != null){
+            uid = getIntent().getExtras().get("uid").toString();
+        }
 
         messagesRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
@@ -202,24 +205,34 @@ public class MessageActivity extends AppCompatActivity {
 
     private void sendMessage(Message message) {
         if(messageArr.isEmpty()){
-            FirebaseUtils.getMembersRef().child(messageKey).addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    Iterator membersIterator = dataSnapshot.getChildren().iterator();
+            Map<String, Object> mapMessageKey = new HashMap<String, Object>();
+            // a random key for the messages
+            messageKey = FirebaseUtils.getUsersRef().child(user.getUid()).child("messages").push().getKey();
 
-                    while (membersIterator.hasNext()) {
-                        DataSnapshot dsUser = (DataSnapshot) membersIterator.next();
-                        String uid = dsUser.getKey();
+            FirebaseUtils.getUsersRef().child(user.getUid()).child("messages").updateChildren(mapMessageKey);
+            FirebaseUtils.getUsersRef().child(user.getUid()).child("messages").child(messageKey).setValue("true");
 
-                        FirebaseUtils.getUsersRef().child(uid).child("messages").child(messageKey).setValue("true");
-                    }
-                }
+            FirebaseUtils.getUsersRef().child(uid).child("messages").updateChildren(mapMessageKey);
+            FirebaseUtils.getUsersRef().child(uid).child("messages").child(messageKey).setValue("false");
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
+            FirebaseUtils.getMembersRef().updateChildren(mapMessageKey);
+            Map<String, Object> mapMyMessage = new HashMap<String, Object>();
+            mapMyMessage.put(user.getUid(), "true");
+            FirebaseUtils.getMembersRef().child(messageKey).updateChildren(mapMyMessage);
+            Map<String, Object> mapOtherMessage = new HashMap<String, Object>();
+            mapOtherMessage.put(uid, "true");
+            FirebaseUtils.getMembersRef().child(messageKey).updateChildren(mapOtherMessage);
 
-                }
-            });
+            FirebaseUtils.getChatsRef().updateChildren(mapMessageKey);
+            Map<String, Object> mapChats = new HashMap<String, Object>();
+            Map<String, Object> mapLastMsg = new HashMap<String, Object>();
+            mapLastMsg.put("message", "");
+            mapLastMsg.put("timestamp", "0");
+            mapLastMsg.put("uid", user.getUid());
+            mapChats.put("last_message", mapLastMsg);
+            FirebaseUtils.getChatsRef().child(messageKey).updateChildren(mapChats);
+
+            messageListeners();
         }
 
         Map<String, Object> mapMessageKey = new HashMap<String, Object>();
@@ -386,38 +399,6 @@ public class MessageActivity extends AppCompatActivity {
         @Override
         public int getItemCount() {
             return msgArr.size();
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-
-        if(messageArr.isEmpty()){
-            FirebaseUtils.getMembersRef().child(messageKey).addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    Iterator membersIterator = dataSnapshot.getChildren().iterator();
-
-                    while (membersIterator.hasNext()) {
-                        DataSnapshot dsUser = (DataSnapshot) membersIterator.next();
-                        String uid = dsUser.getKey();
-
-                        FirebaseUtils.getUsersRef().child(uid).child("messages").child(messageKey).removeValue();
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-
-            FirebaseUtils.getMessagesRef().child(messageKey).removeValue();
-            FirebaseUtils.getChatsRef().child(messageKey).removeValue();
-            FirebaseUtils.getMembersRef().child(messageKey).removeValue();
-
-            finish();
         }
     }
 }

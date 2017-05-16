@@ -134,35 +134,8 @@ public class NewMessageActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     int position = getAdapterPosition();
 
-                    Map<String, Object> mapMessageKey = new HashMap<String, Object>();
-                    // a random key for the messages
-                    String messages_key = FirebaseUtils.getUsersRef().child(user.getUid()).child("messages").push().getKey();
-
-                    FirebaseUtils.getUsersRef().child(user.getUid()).child("messages").updateChildren(mapMessageKey);
-                    FirebaseUtils.getUsersRef().child(user.getUid()).child("messages").child(messages_key).setValue("true");
-
-                    FirebaseUtils.getUsersRef().child(uidArr.get(position)).child("messages").updateChildren(mapMessageKey);
-                    FirebaseUtils.getUsersRef().child(uidArr.get(position)).child("messages").child(messages_key).setValue("false");
-
-                    FirebaseUtils.getMembersRef().updateChildren(mapMessageKey);
-                    Map<String, Object> mapMyMessage = new HashMap<String, Object>();
-                    mapMyMessage.put(user.getUid(), "true");
-                    FirebaseUtils.getMembersRef().child(messages_key).updateChildren(mapMyMessage);
-                    Map<String, Object> mapOtherMessage = new HashMap<String, Object>();
-                    mapOtherMessage.put(uidArr.get(position), "true");
-                    FirebaseUtils.getMembersRef().child(messages_key).updateChildren(mapOtherMessage);
-
-                    FirebaseUtils.getChatsRef().updateChildren(mapMessageKey);
-                    Map<String, Object> mapChats = new HashMap<String, Object>();
-                    Map<String, Object> mapLastMsg = new HashMap<String, Object>();
-                    mapLastMsg.put("message", "");
-                    mapLastMsg.put("timestamp", "0");
-                    mapLastMsg.put("uid", user.getUid());
-                    mapChats.put("last_message", mapLastMsg);
-                    FirebaseUtils.getChatsRef().child(messages_key).updateChildren(mapChats);
-
                     Intent message = new Intent(getApplicationContext(), MessageActivity.class);
-                    message.putExtra("message_key", messages_key);
+                    message.putExtra("uid", uidArr.get(position));
                     startActivity(message);
                     finish();
                 }
