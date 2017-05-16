@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="background">#FAFAFA</color>
+
+    <color name="userStatusOnline">#00E676</color>
+    <color name="userStatusOffline">#FF5252</color>
+    <color name="userStatusUnknown">#E0E0E0</color>
+
+    <color name="colorGrey">#DDDDDD</color>
+    <color name="colorWhite">#FFFFFF</color>
+</resources>

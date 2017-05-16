@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/messagesLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:paddingBottom="@dimen/medium_margin"
+    android:paddingLeft="@dimen/medium_margin"
+    android:paddingRight="@dimen/medium_margin"
+    android:paddingTop="@dimen/medium_margin">
+
+    <ImageView
+        android:id="@+id/userImage"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:backgroundTint="@color/colorPrimaryDark"
+        android:contentDescription="@string/profile_picture"
+        android:src="@drawable/ic_account_circle_black_24dp" />
+
+    <TextView
+        android:id="@+id/userStatusBack"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_alignBottom="@+id/userImage"
+        android:layout_alignRight="@+id/userImage"
+        android:background="@drawable/circle_user_connection_status" />
+
+    <TextView
+        android:id="@+id/userStatus"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:layout_alignBottom="@+id/userImage"
+        android:layout_alignRight="@+id/userImage"
+        android:layout_marginBottom="2dp"
+        android:layout_marginRight="2dp"
+        android:background="@drawable/circle_user_connection_status" />
+
+    <TextView
+        android:id="@+id/username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="@dimen/default_margin"
+        android:layout_marginTop="@dimen/small_margin"
+        android:layout_toEndOf="@+id/userImage"
+        android:text="Username"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/lastMessageTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/username"
+        android:layout_alignBottom="@+id/username"
+        android:layout_alignParentEnd="true"
+        android:layout_marginLeft="@dimen/default_margin"
+        android:text="time"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/lastMessageUser"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/username"
+        android:layout_marginLeft="@dimen/default_margin"
+        android:layout_toEndOf="@+id/userImage"
+        android:text="last message_user"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/lastMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="last message"
+        android:textSize="12sp"
+        android:layout_alignBaseline="@+id/lastMessageUser"
+        android:layout_alignBottom="@+id/lastMessageUser"
+        android:layout_toEndOf="@+id/lastMessageUser" />
+
+</RelativeLayout>
