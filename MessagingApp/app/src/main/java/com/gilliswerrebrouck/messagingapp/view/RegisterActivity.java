@@ -20,7 +20,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -132,7 +131,7 @@ public class RegisterActivity extends AppCompatActivity {
             focusView = mEmailView;
             cancel = true;
         } else if (!isUsernameValid(username)) {
-            mEmailView.setError(getString(R.string.error_invalid_username));
+            mUsernameView.setError(getString(R.string.error_invalid_username));
             focusView = mUsernameView;
             cancel = true;
         }
@@ -229,9 +228,6 @@ public class RegisterActivity extends AppCompatActivity {
                                         user = new User(fbUser);
                                         // Register the user in the firebase database
                                         user.register();
-
-                                        // Subscribe the user to the topic with the uid of the user
-                                        FirebaseMessaging.getInstance().subscribeToTopic(user.getUid());
                                         // Sign out the user
                                         user.signOff();
                                         firebaseAuth.signOut();

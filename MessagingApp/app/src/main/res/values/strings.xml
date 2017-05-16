@@ -23,4 +23,5 @@
     <string name="action_register">Register</string>
     <string name="register">Register</string>
     <string name="sign_in">Login</string>
+    <string name="no_messages">No messages</string>
 </resources>

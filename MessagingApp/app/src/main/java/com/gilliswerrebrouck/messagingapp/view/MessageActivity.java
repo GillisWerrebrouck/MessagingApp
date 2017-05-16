@@ -9,7 +9,6 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,6 +50,8 @@ public class MessageActivity extends AppCompatActivity {
 
     @BindView(R.id.messages)
     RecyclerView messagesRecyclerView;
+    @BindView(R.id.no_messages)
+    TextView noMessages;
     @BindView(R.id.newMessage)
     EditText newMessage;
 
@@ -210,7 +211,7 @@ public class MessageActivity extends AppCompatActivity {
                         DataSnapshot dsUser = (DataSnapshot) membersIterator.next();
                         String uid = dsUser.getKey();
 
-                        FirebaseUtils.getMembersRef().child(uid).child("messages").child(messageKey).setValue("true");
+                        FirebaseUtils.getUsersRef().child(uid).child("messages").child(messageKey).setValue("true");
                     }
                 }
 
@@ -373,6 +374,12 @@ public class MessageActivity extends AppCompatActivity {
                     holder.myMessage.setLayoutParams(param);
                     holder.otherMessageTime.setText(date + " " + time);
                 }
+            }
+
+            if(userArr.isEmpty()){
+                noMessages.setVisibility(View.VISIBLE);
+            } else {
+                noMessages.setVisibility(View.GONE);
             }
         }
 

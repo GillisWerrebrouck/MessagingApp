@@ -203,15 +203,17 @@ public class LoginActivity extends AppCompatActivity {
                                 Toast.LENGTH_SHORT).show();
                         user = new User(fbUser);
                         user.signIn();
+                        // finish the activity (not on backstack)
+                        finish();
                         // show the next activity after signing in
                         Intent messages = new Intent(getApplicationContext(), MessagesActivity.class);
                         startActivity(messages);
+                        showProgress(false);
+
                     } else {
                         Snackbar.make(mLoginFormView, "You first need to verify your email", Snackbar.LENGTH_SHORT)
                                 .setAction("Action", null).show();
                         firebaseAuth.signOut();
-                        // finish the activity (not on backstack)
-                        finish();
                         Intent login = new Intent(getApplicationContext(), LoginActivity.class);
                         startActivity(login);
                         showProgress(false);

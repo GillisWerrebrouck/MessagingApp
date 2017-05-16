@@ -14,7 +14,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +41,8 @@ public class MessagesActivity extends AppCompatActivity {
 
     @BindView(R.id.messages)
     RecyclerView messagesRecyclerView;
+    @BindView(R.id.no_messages)
+    TextView noMessages;
 
     private MessagesRecycleViewAdapter adapter;
 
@@ -324,8 +325,6 @@ public class MessagesActivity extends AppCompatActivity {
                     && !timeArr.isEmpty() && timeArr.size() > position
                     && !messagegArr.isEmpty() && messagegArr.size() > position
                     && !lastMessageUserArr.isEmpty() && lastMessageUserArr.size() > position) {
-                Log.d("TEST", messageKeyArr.get(position));
-
                 if (userStatusArr.get(position).equals("online"))
                     holder.userStatus.getBackground().setTint(getColor(R.color.userStatusOnline));
                 else if (userStatusArr.get(position).equals("offline"))
@@ -345,6 +344,12 @@ public class MessagesActivity extends AppCompatActivity {
                 holder.lastMessageUser.setText(String.format("%s: ", lastMessageUserArr.get(position)));
 
                 holder.lastMessage.setText(messagegArr.get(position));
+            }
+
+            if(messageKeyArr.isEmpty()){
+                noMessages.setVisibility(View.VISIBLE);
+            } else {
+                noMessages.setVisibility(View.GONE);
             }
         }
 

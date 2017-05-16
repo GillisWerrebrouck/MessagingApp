@@ -5,6 +5,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -90,6 +91,8 @@ public class User {
         this.uid = fbUser.getUid();
         // save user
         FirebaseUtils.getUsersRef().child(uid).updateChildren(mapUser);
+        // Subscribe the user to the topic with the uid of the user
+        FirebaseMessaging.getInstance().subscribeToTopic(uid);
     }
 
     public void signIn() {
@@ -100,6 +103,8 @@ public class User {
         this.uid = fbUser.getUid();
         // save user
         FirebaseUtils.getUsersRef().child(uid).updateChildren(mapUser);
+        // Subscribe the user to the topic with the uid of the user
+        FirebaseMessaging.getInstance().subscribeToTopic(uid);
     }
 
     public void signOff() {
@@ -110,6 +115,8 @@ public class User {
         this.uid = fbUser.getUid();
         // save user
         FirebaseUtils.getUsersRef().child(uid).updateChildren(mapUser);
+        // Subscribe the user to the topic with the uid of the user
+        FirebaseMessaging.getInstance().unsubscribeFromTopic(uid);
 
         firebaseAuth.signOut();
     }
