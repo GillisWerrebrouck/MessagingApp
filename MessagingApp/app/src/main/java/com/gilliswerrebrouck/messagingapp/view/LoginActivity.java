@@ -127,8 +127,8 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         // Check for a password
-        if (TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
+        if (TextUtils.isEmpty(password)) {
+            mPasswordView.setError(getString(R.string.error_field_required));
             focusView = mPasswordView;
             cancel = true;
         }
@@ -148,10 +148,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private boolean isEmailValid(String email) {
         return email.contains("@");
-    }
-
-    private boolean isPasswordValid(String password) {
-        return password.length() > 6;
     }
 
     /**

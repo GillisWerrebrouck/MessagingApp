@@ -161,11 +161,11 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private boolean isUsernameValid(String username) {
-        return username.length() > 6;
+        return username.length() >= 6 && username.length() <= 28;
     }
 
     private boolean isPasswordValid(String password) {
-        return password.length() > 6;
+        return password.length() >= 6 && password.length() <= 40;
     }
 
     /**

@@ -76,10 +76,12 @@
         android:id="@+id/lastMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="last message"
-        android:textSize="12sp"
         android:layout_alignBaseline="@+id/lastMessageUser"
         android:layout_alignBottom="@+id/lastMessageUser"
-        android:layout_toEndOf="@+id/lastMessageUser" />
+        android:layout_toEndOf="@+id/lastMessageUser"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="last message"
+        android:textSize="12sp" />
 
 </RelativeLayout>

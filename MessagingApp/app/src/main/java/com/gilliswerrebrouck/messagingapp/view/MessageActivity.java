@@ -213,7 +213,7 @@ public class MessageActivity extends AppCompatActivity {
             FirebaseUtils.getUsersRef().child(user.getUid()).child("messages").child(messageKey).setValue("true");
 
             FirebaseUtils.getUsersRef().child(uid).child("messages").updateChildren(mapMessageKey);
-            FirebaseUtils.getUsersRef().child(uid).child("messages").child(messageKey).setValue("false");
+            FirebaseUtils.getUsersRef().child(uid).child("messages").child(messageKey).setValue("true");
 
             FirebaseUtils.getMembersRef().updateChildren(mapMessageKey);
             Map<String, Object> mapMyMessage = new HashMap<String, Object>();
