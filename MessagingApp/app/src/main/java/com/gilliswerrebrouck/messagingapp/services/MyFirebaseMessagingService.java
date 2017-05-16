@@ -4,11 +4,14 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.TaskStackBuilder;
 
 import com.gilliswerrebrouck.messagingapp.R;
+import com.gilliswerrebrouck.messagingapp.model.Notification;
 import com.gilliswerrebrouck.messagingapp.view.MessageActivity;
 import com.gilliswerrebrouck.messagingapp.view.MessagesActivity;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -32,7 +35,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     public void onMessageReceived(RemoteMessage remoteMessage) {
         //super.onMessageReceived(remoteMessage);
 
-        if(remoteMessage.getData().size() > 0){
+        if (remoteMessage.getData().size() > 0) {
             Map<String, String> data = remoteMessage.getData();
 
             String uid = data.get(UID);
@@ -40,20 +43,22 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             String message = data.get(MESSAGE);
             String messageKey = data.get(MESSAGEKEY);
 
-            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
-            mBuilder.setSmallIcon(R.mipmap.ic_launcher);
-            mBuilder.setContentTitle(sender);
-            mBuilder.setContentText(message);
-
             Intent messageIntent = new Intent(this, MessageActivity.class);
             messageIntent.putExtra("message_key", messageKey);
             TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
 
             stackBuilder.addNextIntent(messageIntent);
             PendingIntent messagePendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-            mBuilder.setContentIntent(messagePendingIntent);
 
-            mBuilder.setAutoCancel(true);
+            Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
+                    .setSmallIcon(R.drawable.ic_stat_message)
+                    .setContentTitle(sender)
+                    .setContentText(message)
+                    .setAutoCancel(true)
+                    .setSound(uri)
+                    .setContentIntent(messagePendingIntent);
 
             NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 

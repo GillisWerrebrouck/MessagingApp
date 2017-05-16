@@ -14,7 +14,11 @@
         android:layout_above="@+id/newMessage"
         android:layout_alignEnd="@+id/newMessage"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentTop="true"
+        android:clipToPadding="false"
+        android:paddingBottom="@dimen/small_margin"
+        android:paddingTop="@dimen/small_margin"
+        android:background="@color/colorLightGrey"/>
 
     <TextView
         android:id="@+id/no_messages"
@@ -30,11 +34,12 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
-        android:layout_marginBottom="@dimen/medium_margin"
-        android:layout_marginLeft="@dimen/default_margin"
-        android:layout_marginRight="@dimen/default_margin"
-        android:layout_marginTop="@dimen/medium_margin"
+        android:background="@drawable/border_top"
         android:hint="@string/type_a_message"
         android:imeOptions="actionSend"
-        android:inputType="textCapSentences" />
+        android:inputType="textCapSentences"
+        android:paddingBottom="@dimen/large_margin"
+        android:paddingLeft="@dimen/default_margin"
+        android:paddingRight="@dimen/default_margin"
+        android:paddingTop="@dimen/large_margin" />
 </RelativeLayout>

@@ -101,10 +101,10 @@ public class MessageActivity extends AppCompatActivity {
         user = new User(firebaseAuth.getCurrentUser());
         final User finalUser = user;
 
-        if(getIntent().getExtras().get("message_key") != null){
+        if (getIntent().getExtras().get("message_key") != null) {
             messageKey = getIntent().getExtras().get("message_key").toString();
             messageListeners();
-        } else if (getIntent().getExtras().get("uid") != null){
+        } else if (getIntent().getExtras().get("uid") != null) {
             uid = getIntent().getExtras().get("uid").toString();
         }
 
@@ -118,9 +118,9 @@ public class MessageActivity extends AppCompatActivity {
         newMessage.setOnEditorActionListener(new EditText.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEND) {
+                String msg = newMessage.getText().toString();
+                if (!msg.isEmpty() && actionId == EditorInfo.IME_ACTION_SEND) {
                     String uid = user.getUid();
-                    String msg = newMessage.getText().toString();
                     Long tsLong = System.currentTimeMillis();
                     String ts = tsLong.toString();
                     Message message = new Message(uid, msg, ts);
@@ -148,7 +148,7 @@ public class MessageActivity extends AppCompatActivity {
                 FirebaseUtils.getUsersRef().child(user.getUid()).child("messages").child(messageKey).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        if(dataSnapshot == null || dataSnapshot.getValue() == null) return;
+                        if (dataSnapshot == null || dataSnapshot.getValue() == null) return;
                         if (dataSnapshot.getValue().toString().equals("true")) {
                             FirebaseUtils.getMessagesRef().child(messageKey).addValueEventListener(new ValueEventListener() {
                                 @Override
@@ -204,7 +204,7 @@ public class MessageActivity extends AppCompatActivity {
     }
 
     private void sendMessage(Message message) {
-        if(messageArr.isEmpty()){
+        if (messageArr.isEmpty()) {
             Map<String, Object> mapMessageKey = new HashMap<String, Object>();
             // a random key for the messages
             messageKey = FirebaseUtils.getUsersRef().child(user.getUid()).child("messages").push().getKey();
@@ -267,7 +267,7 @@ public class MessageActivity extends AppCompatActivity {
                             DataSnapshot dsMember = (DataSnapshot) membersIterator.next();
                             String uid = dsMember.getKey();
 
-                            if(!uid.equals(user.getUid())){
+                            if (!uid.equals(user.getUid())) {
                                 notification.setUid(uid);
                                 notification.setTopic(uid);
                             }
@@ -364,12 +364,6 @@ public class MessageActivity extends AppCompatActivity {
         public void onBindViewHolder(MessageViewHolder holder, int position) {
             holder.setIsRecyclable(false);
 
-            LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
-                    RecyclerView.LayoutParams.WRAP_CONTENT,
-                    RecyclerView.LayoutParams.WRAP_CONTENT,
-                    0.3f
-            );
-
             if (!userArr.isEmpty() && userArr.size() > position
                     && !timeArr.isEmpty() && timeArr.size() > position
                     && !msgArr.isEmpty() && msgArr.size() > position) {
@@ -379,17 +373,17 @@ public class MessageActivity extends AppCompatActivity {
                 if (firebaseAuth.getCurrentUser().getUid().equals(userArr.get(position))) {
                     holder.myMessage.setText(msgArr.get(position));
                     holder.otherMessage.setVisibility(View.INVISIBLE);
-                    holder.otherMessage.setLayoutParams(param);
+                    holder.otherMessage.setWidth(0);
                     holder.myMessageTime.setText(date + " " + time);
                 } else {
                     holder.otherMessage.setText(msgArr.get(position));
                     holder.myMessage.setVisibility(View.INVISIBLE);
-                    holder.myMessage.setLayoutParams(param);
+                    holder.myMessage.setWidth(0);
                     holder.otherMessageTime.setText(date + " " + time);
                 }
             }
 
-            if(userArr.isEmpty()){
+            if (userArr.isEmpty()) {
                 noMessages.setVisibility(View.VISIBLE);
             } else {
                 noMessages.setVisibility(View.GONE);
