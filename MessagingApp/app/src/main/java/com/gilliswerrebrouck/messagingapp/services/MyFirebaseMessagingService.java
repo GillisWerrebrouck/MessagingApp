@@ -1,5 +1,6 @@
 package com.gilliswerrebrouck.messagingapp.services;
 
+import android.app.ActivityManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -19,6 +20,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,9 +35,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        //super.onMessageReceived(remoteMessage);
+        ActivityManager activityManager = (ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> services = activityManager
+                .getRunningTasks(Integer.MAX_VALUE);
+        boolean isActivityFound = false;
 
-        if (remoteMessage.getData().size() > 0) {
+        if (services.get(0).topActivity.getPackageName()
+                .equalsIgnoreCase(this.getPackageName())) {
+            isActivityFound = true;
+        }
+
+        if (!isActivityFound && remoteMessage.getData().size() > 0) {
             Map<String, String> data = remoteMessage.getData();
 
             String uid = data.get(UID);
