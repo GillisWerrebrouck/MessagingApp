@@ -11,6 +11,14 @@ public class Message {
     private String time;
     //endregion
 
+    //region constructor(s)
+    public Message(String uid, String message, String time) {
+        this.uid = uid;
+        this.message = message;
+        this.time = time;
+    }
+    //endregion
+
     //region getter(s)
     public String getUid() {
         return this.uid;
@@ -35,14 +43,6 @@ public class Message {
     }
 
     public void setTime(String time) {
-        this.time = time;
-    }
-    //endregion
-
-    //region constructor(s)
-    public Message(String uid, String message, String time) {
-        this.uid = uid;
-        this.message = message;
         this.time = time;
     }
     //endregion

@@ -3,6 +3,7 @@ package com.gilliswerrebrouck.messagingapp.view;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 
 import com.gilliswerrebrouck.messagingapp.R;
 import com.gilliswerrebrouck.messagingapp.model.User;
+import com.gilliswerrebrouck.messagingapp.utils.FirebaseUtils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -41,15 +43,6 @@ public class MessagesActivity extends AppCompatActivity {
     @BindView(R.id.messages)
     RecyclerView messagesRecyclerView;
 
-    // get the root in the firebase db
-    private DatabaseReference root = FirebaseDatabase.getInstance().getReference().getRoot();
-    // get the members as root in the firebase db
-    private DatabaseReference members = root.child("members");
-    // get the users as root in the firebase db
-    private DatabaseReference users = root.child("users");
-    // get the chats as root in the firebase db
-    private DatabaseReference chats = root.child("chats");
-
     private MessagesRecycleViewAdapter adapter;
 
     private List<String> messageKeyArr = new ArrayList<>();
@@ -60,6 +53,7 @@ public class MessagesActivity extends AppCompatActivity {
     private List<String> messageArr = new ArrayList<>();
 
     private FirebaseAuth firebaseAuth;
+    private FirebaseAuth.AuthStateListener mAuthStateListener;
     private User user = null;
 
     @Override
@@ -90,11 +84,17 @@ public class MessagesActivity extends AppCompatActivity {
         messagesRecyclerView.setLayoutManager(layoutManager);
         messagesRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        if (firebaseAuth.getCurrentUser() == null) {
-            Intent login = new Intent(getApplicationContext(), LoginActivity.class);
-            startActivity(login);
-            finish();
-        }
+
+        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                if (firebaseAuth.getCurrentUser() == null) {
+                    Intent login = new Intent(getApplicationContext(), LoginActivity.class);
+                    startActivity(login);
+                    finish();
+                }
+            }
+        };
 
         user = new User(firebaseAuth.getCurrentUser());
 
@@ -104,10 +104,10 @@ public class MessagesActivity extends AppCompatActivity {
     private void messagesListeners() {
         final User finalUser = user;
 
-        root.addValueEventListener(new ValueEventListener() {
+        FirebaseUtils.getRootRef().addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                users.child(finalUser.getUid()).child("messages").addValueEventListener(new ValueEventListener() {
+                FirebaseUtils.getUsersRef().child(finalUser.getUid()).child("messages").addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         messageKeyArr.clear();
@@ -127,7 +127,7 @@ public class MessagesActivity extends AppCompatActivity {
                             }
                             messageKeyArr.add(messageKeyArr.size(), messageKey);
 
-                            members.child(messageKey).addValueEventListener(new ValueEventListener() {
+                            FirebaseUtils.getMembersRef().child(messageKey).addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     Iterator membersIterator = dataSnapshot.getChildren().iterator();
@@ -138,7 +138,7 @@ public class MessagesActivity extends AppCompatActivity {
                                         String memberValue = member.getValue().toString();
 
                                         if (!memberKey.equals(user.getUid()) && memberValue.equals("true")) {
-                                            users.child(memberKey).child("username").addValueEventListener(new ValueEventListener() {
+                                            FirebaseUtils.getUsersRef().child(memberKey).child("username").addValueEventListener(new ValueEventListener() {
                                                 @Override
                                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                                     if (dataSnapshot == null || dataSnapshot.getValue() == null)
@@ -154,7 +154,7 @@ public class MessagesActivity extends AppCompatActivity {
                                                 }
                                             });
 
-                                            users.child(memberKey).child("status").addValueEventListener(new ValueEventListener() {
+                                            FirebaseUtils.getUsersRef().child(memberKey).child("status").addValueEventListener(new ValueEventListener() {
                                                 @Override
                                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                                     if (dataSnapshot == null || dataSnapshot.getValue() == null)
@@ -179,7 +179,7 @@ public class MessagesActivity extends AppCompatActivity {
                                 }
                             });
 
-                            chats.child(messageKey).child("last_message").child("message").addValueEventListener(new ValueEventListener() {
+                            FirebaseUtils.getChatsRef().child(messageKey).child("last_message").child("message").addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     if (dataSnapshot == null || dataSnapshot.getValue() == null)
@@ -194,14 +194,14 @@ public class MessagesActivity extends AppCompatActivity {
                                 }
                             });
 
-                            chats.child(messageKey).child("last_message").child("uid").addValueEventListener(new ValueEventListener() {
+                            FirebaseUtils.getChatsRef().child(messageKey).child("last_message").child("uid").addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     if (dataSnapshot == null || dataSnapshot.getValue() == null)
                                         return;
                                     String uid = dataSnapshot.getValue().toString();
 
-                                    users.child(uid).child("username").addValueEventListener(new ValueEventListener() {
+                                    FirebaseUtils.getUsersRef().child(uid).child("username").addValueEventListener(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(DataSnapshot dataSnapshot) {
                                             lastMessageUserArr.add(lastMessageUserArr.size(), dataSnapshot.getValue().toString());
@@ -222,7 +222,7 @@ public class MessagesActivity extends AppCompatActivity {
                                 }
                             });
 
-                            chats.child(messageKey).child("last_message").child("timestamp").addValueEventListener(new ValueEventListener() {
+                            FirebaseUtils.getChatsRef().child(messageKey).child("last_message").child("timestamp").addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     if (dataSnapshot == null || dataSnapshot.getValue() == null)

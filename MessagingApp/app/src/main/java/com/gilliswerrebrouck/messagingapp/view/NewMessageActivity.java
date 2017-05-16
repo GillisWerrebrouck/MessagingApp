@@ -1,6 +1,7 @@
 package com.gilliswerrebrouck.messagingapp.view;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 
 import com.gilliswerrebrouck.messagingapp.R;
 import com.gilliswerrebrouck.messagingapp.model.User;
+import com.gilliswerrebrouck.messagingapp.utils.FirebaseUtils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -38,15 +40,6 @@ public class NewMessageActivity extends AppCompatActivity {
     @BindView(R.id.users)
     RecyclerView usersRecyclerView;
 
-    // get the root in the firebase db
-    private DatabaseReference root = FirebaseDatabase.getInstance().getReference().getRoot();
-    // get the users as root in the firebase db
-    private DatabaseReference users = root.child("users");
-    // get the members as root in the firebase db
-    private DatabaseReference members = root.child("members");
-    // get the chats as root in the firebase db
-    private DatabaseReference chats = root.child("chats");
-
     private UsersRecycleViewAdapter adapter;
 
     private List<String> uidArr = new ArrayList<>();
@@ -54,6 +47,7 @@ public class NewMessageActivity extends AppCompatActivity {
     private List<String> usernameArr = new ArrayList<>();
 
     private FirebaseAuth firebaseAuth;
+    private FirebaseAuth.AuthStateListener mAuthStateListener;
     private User user = null;
 
     @Override
@@ -75,11 +69,16 @@ public class NewMessageActivity extends AppCompatActivity {
         usersRecyclerView.setLayoutManager(layoutManager);
         usersRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        if(firebaseAuth.getCurrentUser() == null){
-            Intent login = new Intent(getApplicationContext(), LoginActivity.class);
-            startActivity(login);
-            finish();
-        }
+        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                if (firebaseAuth.getCurrentUser() == null) {
+                    Intent login = new Intent(getApplicationContext(), LoginActivity.class);
+                    startActivity(login);
+                    finish();
+                }
+            }
+        };
 
         user = new User(firebaseAuth.getCurrentUser());
 
@@ -87,7 +86,7 @@ public class NewMessageActivity extends AppCompatActivity {
     }
 
     private void userListeners() {
-        users.addValueEventListener(new ValueEventListener() {
+        FirebaseUtils.getUsersRef().addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 uidArr.clear();
@@ -138,30 +137,30 @@ public class NewMessageActivity extends AppCompatActivity {
 
                     Map<String, Object> mapMessageKey = new HashMap<String, Object>();
                     // a random key for the messages
-                    String messages_key = users.child(user.getUid()).child("messages").push().getKey();
+                    String messages_key = FirebaseUtils.getUsersRef().child(user.getUid()).child("messages").push().getKey();
 
-                    users.child(user.getUid()).child("messages").updateChildren(mapMessageKey);
-                    users.child(user.getUid()).child("messages").child(messages_key).setValue("true");
+                    FirebaseUtils.getUsersRef().child(user.getUid()).child("messages").updateChildren(mapMessageKey);
+                    FirebaseUtils.getUsersRef().child(user.getUid()).child("messages").child(messages_key).setValue("true");
 
-                    users.child(uidArr.get(position)).child("messages").updateChildren(mapMessageKey);
-                    users.child(uidArr.get(position)).child("messages").child(messages_key).setValue("false");
+                    FirebaseUtils.getUsersRef().child(uidArr.get(position)).child("messages").updateChildren(mapMessageKey);
+                    FirebaseUtils.getUsersRef().child(uidArr.get(position)).child("messages").child(messages_key).setValue("false");
 
-                    members.updateChildren(mapMessageKey);
+                    FirebaseUtils.getMembersRef().updateChildren(mapMessageKey);
                     Map<String, Object> mapMyMessage = new HashMap<String, Object>();
                     mapMyMessage.put(user.getUid(), "true");
-                    members.child(messages_key).updateChildren(mapMyMessage);
+                    FirebaseUtils.getMembersRef().child(messages_key).updateChildren(mapMyMessage);
                     Map<String, Object> mapOtherMessage = new HashMap<String, Object>();
                     mapOtherMessage.put(uidArr.get(position), "true");
-                    members.child(messages_key).updateChildren(mapOtherMessage);
+                    FirebaseUtils.getMembersRef().child(messages_key).updateChildren(mapOtherMessage);
 
-                    chats.updateChildren(mapMessageKey);
+                    FirebaseUtils.getChatsRef().updateChildren(mapMessageKey);
                     Map<String, Object> mapChats = new HashMap<String, Object>();
                     Map<String, Object> mapLastMsg = new HashMap<String, Object>();
                     mapLastMsg.put("message", "");
                     mapLastMsg.put("timestamp", "0");
                     mapLastMsg.put("uid", user.getUid());
                     mapChats.put("last_message", mapLastMsg);
-                    chats.child(messages_key).updateChildren(mapChats);
+                    FirebaseUtils.getChatsRef().child(messages_key).updateChildren(mapChats);
 
                     Intent message = new Intent(getApplicationContext(), MessageActivity.class);
                     message.putExtra("message_key", messages_key);

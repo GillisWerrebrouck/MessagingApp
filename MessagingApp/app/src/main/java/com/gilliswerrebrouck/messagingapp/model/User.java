@@ -1,5 +1,6 @@
 package com.gilliswerrebrouck.messagingapp.model;
 
+import com.gilliswerrebrouck.messagingapp.utils.FirebaseUtils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -14,7 +15,6 @@ import java.util.Map;
 
 public class User {
     //region firebase properties
-    private DatabaseReference users = FirebaseDatabase.getInstance().getReference().child("users");
     private FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
     private FirebaseUser fbUser;
     //endregion
@@ -24,6 +24,25 @@ public class User {
     private String email;
     private String password;
     private String uid;
+    //endregion
+
+    //region constructor(s)
+    public User(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
+    public User(String email, String username, String password) {
+        this.email = email;
+        this.username = username;
+        this.password = password;
+    }
+
+    public User(FirebaseUser fbuser) {
+        this.username = fbuser.getDisplayName();
+        this.email = fbuser.getEmail();
+        this.uid = fbuser.getUid();
+        this.fbUser = fbuser;
+    }
     //endregion
 
     //region getter(s)
@@ -62,25 +81,6 @@ public class User {
     }
     //endregion setters
 
-    //region constructor(s)
-    public User(String email, String password) {
-        this.email = email;
-        this.password = password;
-    }
-    public User(String email, String username, String password) {
-        this.email = email;
-        this.username = username;
-        this.password = password;
-    }
-
-    public User(FirebaseUser fbuser) {
-        this.username = fbuser.getDisplayName();
-        this.email = fbuser.getEmail();
-        this.uid = fbuser.getUid();
-        this.fbUser = fbuser;
-    }
-    //endregion
-
     //region method(s)
     public void register(){
         // key-value-pair for the user info
@@ -89,7 +89,7 @@ public class User {
         // set uid
         this.uid = fbUser.getUid();
         // save user
-        users.child(uid).updateChildren(mapUser);
+        FirebaseUtils.getUsersRef().child(uid).updateChildren(mapUser);
     }
 
     public void signIn() {
@@ -99,7 +99,7 @@ public class User {
         // set uid
         this.uid = fbUser.getUid();
         // save user
-        users.child(uid).updateChildren(mapUser);
+        FirebaseUtils.getUsersRef().child(uid).updateChildren(mapUser);
     }
 
     public void signOff() {
@@ -109,7 +109,7 @@ public class User {
         // set uid
         this.uid = fbUser.getUid();
         // save user
-        users.child(uid).updateChildren(mapUser);
+        FirebaseUtils.getUsersRef().child(uid).updateChildren(mapUser);
 
         firebaseAuth.signOut();
     }

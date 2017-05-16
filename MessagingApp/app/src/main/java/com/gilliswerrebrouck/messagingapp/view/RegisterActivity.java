@@ -44,6 +44,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.w3c.dom.Text;
 
@@ -228,6 +229,9 @@ public class RegisterActivity extends AppCompatActivity {
                                         user = new User(fbUser);
                                         // Register the user in the firebase database
                                         user.register();
+
+                                        // Subscribe the user to the topic with the uid of the user
+                                        FirebaseMessaging.getInstance().subscribeToTopic(user.getUid());
                                         // Sign out the user
                                         user.signOff();
                                         firebaseAuth.signOut();
