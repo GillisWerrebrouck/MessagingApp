@@ -104,8 +104,46 @@ public class MessageActivity extends AppCompatActivity {
         if (getIntent().getExtras().get("message_key") != null) {
             messageKey = getIntent().getExtras().get("message_key").toString();
             messageListeners();
+
+            FirebaseUtils.getMembersRef().child(messageKey).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Iterator membersIterator = dataSnapshot.getChildren().iterator();
+
+                    while (membersIterator.hasNext()) {
+                        String uid = ((DataSnapshot) membersIterator.next()).getKey();
+                        FirebaseUtils.getUsersRef().child(uid).child("username").addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                setTitle(dataSnapshot.getValue().toString());
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
         } else if (getIntent().getExtras().get("uid") != null) {
             uid = getIntent().getExtras().get("uid").toString();
+            FirebaseUtils.getUsersRef().child(uid).child("username").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    setTitle(dataSnapshot.getValue().toString());
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
         }
 
         messagesRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {

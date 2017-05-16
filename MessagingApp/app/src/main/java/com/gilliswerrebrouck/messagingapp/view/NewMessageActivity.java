@@ -55,6 +55,7 @@ public class NewMessageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_message);
+        setTitle("Users");
 
         ButterKnife.bind(this);
 
