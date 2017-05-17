@@ -206,7 +206,6 @@ public class LoginActivity extends AppCompatActivity {
                         Intent messages = new Intent(getApplicationContext(), MessagesActivity.class);
                         startActivity(messages);
                         showProgress(false);
-
                     } else {
                         Snackbar.make(mLoginFormView, "You first need to verify your email", Snackbar.LENGTH_SHORT)
                                 .setAction("Action", null).show();
